@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js"
 import { User} from "../models/user.model.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import {uploadOnCloudinary, deleteFromCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
@@ -54,7 +54,7 @@ const registerUser = asyncHandler( async (req, res) => {
     }
     //console.log(req.files);
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
+    const avatarLocalPath = req.files?.avatar?.[0]?.path;
     //const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
     let coverImageLocalPath;
@@ -107,7 +107,6 @@ const loginUser = asyncHandler(async (req, res) =>{
     //send cookie
 
     const {email, username, password} = req.body
-    console.log(email);
 
     if (!username && !email) {
         throw new ApiError(400, "username or email is required")
@@ -212,7 +211,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             secure: true
         }
     
-        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
+        const {accessToken, refreshToken: newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
     
         return res
         .status(200)
@@ -293,13 +292,15 @@ const updateUserAvatar = asyncHandler(async(req, res) => {
         throw new ApiError(400, "Avatar file is missing")
     }
 
-    //TODO: delete old image - assignment
+    // Delete old avatar from cloudinary
+    if (req.user?.avatar) {
+        await deleteFromCloudinary(req.user.avatar)
+    }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
 
     if (!avatar.url) {
-        throw new ApiError(400, "Error while uploading on avatar")
-        
+        throw new ApiError(400, "Error while uploading avatar")
     }
 
     const user = await User.findByIdAndUpdate(
@@ -326,14 +327,15 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
         throw new ApiError(400, "Cover image file is missing")
     }
 
-    //TODO: delete old image - assignment
-
+    // Delete old cover image from cloudinary
+    if (req.user?.coverImage) {
+        await deleteFromCloudinary(req.user.coverImage)
+    }
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
     if (!coverImage.url) {
-        throw new ApiError(400, "Error while uploading on avatar")
-        
+        throw new ApiError(400, "Error while uploading cover image")
     }
 
     const user = await User.findByIdAndUpdate(

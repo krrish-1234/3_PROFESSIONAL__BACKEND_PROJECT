@@ -33,7 +33,8 @@ const videoSchema = new Schema(
         },
         owner : {
             type : Schema.Types.ObjectId,
-            ref : "User" 
+            ref : "User",
+            required: true
         }
     },
     {
@@ -43,5 +44,7 @@ const videoSchema = new Schema(
 
 videoSchema.plugin(mongooseAggregatePaginate)
 
-export const Video = mongoose.model("Video",videoSchema)
+// Add index on owner field
+videoSchema.index({ owner: 1 })
 
+export const Video = mongoose.model("Video",videoSchema)

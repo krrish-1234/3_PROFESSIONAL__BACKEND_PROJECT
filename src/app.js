@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser"
 const app = express()
 
 app.use(cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
     credentials: true
 }))
 /*
@@ -60,5 +60,19 @@ app.use("/api/v1/playlist", playlistRouter)
 app.use("/api/v1/dashboard", dashboardRouter)
 
 // http://localhost:8000/api/v1/users/register
+
+// Global error handler
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500
+    const message = err.message || "Something went wrong"
+    
+    return res.status(statusCode).json({
+        statusCode,
+        data: null,
+        message,
+        success: false,
+        errors: err.errors || []
+    })
+})
 
 export { app }
