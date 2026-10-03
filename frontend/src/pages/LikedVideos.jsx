@@ -16,7 +16,7 @@ const LikedVideos = () => {
     const fetchLiked = async () => {
         try {
             const res = await getLikedVideos()
-            setVideos(res.data.data.map(item => item.video))
+            setVideos(res.data.data || [])
         } catch (error) {
             console.error(error)
         } finally {
