@@ -39,8 +39,7 @@ const Subscriptions = () => {
                 />
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    {channels.map(sub => {
-                        const channel = sub.channel
+                    {channels.map(channel => {
                         return (
                             <div key={channel._id} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: 16, background: 'var(--bg-secondary)', borderRadius: 12 }}>
                                 <Link to={`/channel/${channel.username}`}>
