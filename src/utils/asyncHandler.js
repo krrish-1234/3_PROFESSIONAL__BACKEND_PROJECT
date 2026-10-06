@@ -16,7 +16,10 @@ const asyncHandler =(fn)=> ()=>{}
 const asyncHandler =(requestHandler)=>{
     return (req,res,next)=>{
         Promise.resolve(requestHandler(req, res, next))
-        .catch((err)=> next(err))
+        .catch((err)=> {
+            console.error("🔥 ERROR:", err)
+            next(err)
+        })
         // next(err) passes error to Express error middleware.
     }
 }
