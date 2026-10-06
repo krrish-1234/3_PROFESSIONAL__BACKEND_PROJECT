@@ -61,10 +61,19 @@ const VideoWatch = () => {
 
     const handleLike = async () => {
         if (!user) return toast.error('Please login to like')
+
         try {
-            await toggleVideoLike(videoId)
-            setIsLiked(!isLiked)
-            setLikesCount(prev => isLiked ? prev - 1 : prev + 1)
+            const res = await toggleVideoLike(videoId)
+
+            const newIsLiked = res.data.data.isLiked
+
+            setIsLiked(newIsLiked)
+
+            setLikesCount(prev =>
+                newIsLiked
+                    ? prev + 1
+                    : Math.max(0, prev - 1)
+            )
         } catch (error) {
             toast.error('Error toggling like')
         }
