@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { getVideoById, toggleVideoLike, toggleSubscription, addComment, getVideoComments, getAllVideos } from '../api'
+import { getVideoById, toggleVideoLike, toggleSubscription, addComment, getVideoComments, getAllVideos, deleteComment } from '../api'
 import { useAuth } from '../context/AuthContext'
 import { formatTimeAgo, formatViews } from '../utils'
 import { AiOutlineLike, AiFillLike } from 'react-icons/ai'
-import { MdOutlineVideoLibrary } from 'react-icons/md'
+import { MdOutlineVideoLibrary, MdDelete } from 'react-icons/md'
 import Loader from '../components/Loader'
 import toast from 'react-hot-toast'
 
@@ -106,6 +106,16 @@ const VideoWatch = () => {
         }
     }
 
+    const handleDeleteComment = async (commentId) => {
+        try {
+            await deleteComment(commentId)
+            setComments(comments.filter(c => c._id !== commentId))
+            toast.success('Comment deleted')
+        } catch (error) {
+            toast.error('Error deleting comment')
+        }
+    }
+
     if (loading) return <Loader />
     if (!video) return <div>Video not found</div>
 
@@ -188,6 +198,17 @@ const VideoWatch = () => {
                                         @{comment.owner.username} <span>{formatTimeAgo(comment.createdAt)}</span>
                                     </div>
                                     <div className="comment-text">{comment.content}</div>
+                                    {user && user._id === comment.owner._id && (
+                                        <div className="comment-actions">
+                                            <button 
+                                                className="comment-action-btn" 
+                                                onClick={() => handleDeleteComment(comment._id)}
+                                                title="Delete comment"
+                                            >
+                                                <MdDelete size={16} /> Delete
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
