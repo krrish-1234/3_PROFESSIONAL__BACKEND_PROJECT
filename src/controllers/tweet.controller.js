@@ -6,6 +6,61 @@ import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 
+const getAllTweets = asyncHandler(async (req, res) => {
+    const tweets = await Tweet.aggregate([
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "owner",
+                pipeline: [
+                    {
+                        $project: {
+                            fullName: 1,
+                            username: 1,
+                            avatar: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "tweet",
+                as: "likes"
+            }
+        },
+        {
+            $addFields: {
+                owner: { $first: "$owner" },
+                likesCount: { $size: "$likes" },
+                isLiked: {
+                    $cond: {
+                        if: { $in: [req.user?._id, "$likes.likedBy"] },
+                        then: true,
+                        else: false
+                    }
+                }
+            }
+        },
+        {
+            $project: {
+                likes: 0
+            }
+        },
+        {
+            $sort: { createdAt: -1 }
+        }
+    ])
+
+    return res.status(200).json(
+        new ApiResponse(200, tweets, "All tweets fetched successfully")
+    )
+})
+
 const createTweet = asyncHandler(async (req, res) => {
     const { content } = req.body
     
@@ -147,6 +202,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
 })
 
 export {
+    getAllTweets,
     createTweet,
     getUserTweets,
     updateTweet,

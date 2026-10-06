@@ -40,6 +40,7 @@ export const deleteVideo = (videoId) => api.delete(`/videos/${videoId}`)
 export const togglePublishStatus = (videoId) => api.patch(`/videos/toggle/publish/${videoId}`)
 
 // Tweet APIs
+export const getAllTweets = () => api.get('/tweets')
 export const createTweet = (data) => api.post('/tweets', data)
 export const getUserTweets = (userId) => api.get(`/tweets/user/${userId}`)
 export const updateTweet = (tweetId, data) => api.patch(`/tweets/${tweetId}`, data)

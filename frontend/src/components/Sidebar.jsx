@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { AiOutlineHome, AiOutlineLike } from 'react-icons/ai'
-import { MdOutlineHistory, MdOutlineVideoLibrary, MdOutlineSubscriptions, MdOutlinePlaylistPlay } from 'react-icons/md'
+import { MdOutlineHistory, MdOutlineVideoLibrary, MdOutlineSubscriptions, MdOutlinePlaylistPlay, MdOutlineForum } from 'react-icons/md'
 
 const Sidebar = () => {
     return (
@@ -29,6 +29,10 @@ const Sidebar = () => {
             <NavLink to="/playlists" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
                 <MdOutlinePlaylistPlay />
                 <span>Playlists</span>
+            </NavLink>
+            <NavLink to="/tweets" className={({ isActive }) => `sidebar-item ${isActive ? 'active' : ''}`}>
+                <MdOutlineForum />
+                <span>Tweets</span>
             </NavLink>
         </div>
     )

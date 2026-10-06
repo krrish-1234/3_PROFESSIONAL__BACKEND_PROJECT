@@ -16,6 +16,7 @@ import Settings from './pages/Settings'
 import Playlists from './pages/Playlists'
 import PlaylistView from './pages/PlaylistView'
 import Subscriptions from './pages/Subscriptions'
+import Tweets from './pages/Tweets'
 
 function App() {
     return (
@@ -36,6 +37,7 @@ function App() {
                     <Route path="/playlists" element={<Layout><ProtectedRoute><Playlists /></ProtectedRoute></Layout>} />
                     <Route path="/playlist/:playlistId" element={<Layout><PlaylistView /></Layout>} />
                     <Route path="/subscriptions" element={<Layout><ProtectedRoute><Subscriptions /></ProtectedRoute></Layout>} />
+                    <Route path="/tweets" element={<Layout><ProtectedRoute><Tweets /></ProtectedRoute></Layout>} />
                 </Routes>
             </AuthProvider>
         </BrowserRouter>
